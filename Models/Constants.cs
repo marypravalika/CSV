@@ -6,7 +6,7 @@ namespace CSV.Models
     public class Constants
     {
 
-        public readonly Student Student = new Student { StudentId = "200425198", FirstName = "Mary Pravalika", LastName = "Jaddu" };
+        //public readonly Student Student = new Student { StudentId = "200425198", FirstName = "Mary Pravalika", LastName = "Jaddu" };
 
 
         public class Locations
@@ -16,7 +16,7 @@ namespace CSV.Models
             public readonly static string ExePath = Environment.CurrentDirectory;
 
 
-            public readonly static string ContentPath = $"{ExePath}//..//..//..//Content";
+            public readonly static string ContentPath = $"{ExePath}//..//..//..//Contents";
             public readonly static string DataFolder = $"{ContentPath}//Data";
             public readonly static string imageFolder = $"{ContentPath}//Image";
 
@@ -34,6 +34,12 @@ namespace CSV.Models
 
             
         }
+
+        public class Student
+        {
+            public const string InfoCSVFileName = "info.csv";
+            public const string MyImageFileName = "myimage.jpg";
         }
+    }
     }
 

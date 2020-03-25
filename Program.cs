@@ -13,78 +13,80 @@ namespace CSV
 {
     class Program
     {
-
         static void Main(string[] args)
         {
-            List<Student> students = new List<Student>();
+            Student myrecord = new Student { StudentId = "200425198", FirstName = "MaryPravalika", LastName = "Jaddu" };
+        List<Student> students = new List<Student>();
+        List<string> directories = FTP.GetDirectory(Constants.FTP.BaseUrl);
 
-            List<string> directories = FTP.GetDirectory(Constants.FTP.BaseUrl);
+
+
             foreach (var directory in directories)
             {
                 Student student = new Student() { AbsoluteUrl = Constants.FTP.BaseUrl };
-                student.FromDirectory(directory);
-
-
+        student.FromDirectory(directory);
+                Console.WriteLine(directory);
+                Console.WriteLine(student);
                 string infoFilePath = student.FullPathUrl + "/" + Constants.Locations.InfoFile;
+        string imageFilePath = student.FullPathUrl + "/" + Constants.Locations.ImageFile;
 
-                Console.WriteLine(students);
 
-                bool fileExits = FTP.FileExists(infoFilePath);
-                if (fileExits == true)
+        bool fileExists = FTP.FileExists(infoFilePath);
+                //if (FTP.FileExists(student.InfoCSVPath))
+                {
+                    var csvBytes = FTP.DownloadFileBytes(student.InfoCSVPath);
+
+        string csvFileData = Encoding.ASCII.GetString(csvBytes, 0, csvBytes.Length);
+
+        string[] data = csvFileData.Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
+                    if (data.Length != 2)
+                    {
+                        Console.WriteLine("Error in your Age");
+                    }
+                    else
+                    {
+                        student.FromCSV(data[1]);
+                        Console.WriteLine("Age:" + student.Age);
+                    }
+
+
+                }
+                if (fileExists == true)
                 {
                     string csvPath = $@"/Users/marypravalikajaddu/Desktop/StudentFiles/{directory}.csv";
 
                     //FTP.DownloadFile(infoFilePath, csvPath);
-                    byte[] bytes = FTP.DownloadFileBytes(infoFilePath);
-                    string csvData = Encoding.Default.GetString(bytes);
-
-
-                    string[] csvlines = csvData.Split("/r/n", StringSplitOptions.RemoveEmptyEntries);
-
-
-                    if (csvlines.Length != 2)
-                    {
-                        Console.WriteLine("Error in CSV formate");
-                    }
-                    else
-                    {
-                        student.FromCSV(csvlines[1]);
-
-                    }
-
-
-                    //FTP.DownloadFile(infoFilePath, csvPath);
-                    Console.WriteLine("Found info file");
+                    Console.WriteLine("Found info file:");
                 }
                 else
                 {
-                    Console.WriteLine("could not find info file");
+                    Console.WriteLine("Could not find info file:");
                 }
+
                 Console.WriteLine("\t" + infoFilePath);
 
-                string imageFilePath = student.FullPathUrl + "/" + Constants.Locations.ImageFile;
+            
 
-                bool imageFileExits = FTP.FileExists(imageFilePath);
-                if (imageFileExits == true)
+                bool imageFileExists = FTP.FileExists(imageFilePath);
+
+                if (imageFileExists == true)
                 {
-                    Console.WriteLine("Found image file");
+
+                    Console.WriteLine("Found image file:");
                 }
                 else
                 {
-                    Console.WriteLine("could not find info file");
+                    Console.WriteLine("Could not find image file:");
                 }
+
                 Console.WriteLine("\t" + imageFilePath);
 
                 students.Add(student);
-
-                //Console.WriteLine(student);
-
-                //Console.WriteLine(directory);
             }
 
-            //save to CSV
-            string studentsCSVPath = $"{Constants.Locations.DataFolder}\\students.csv";
-
+            //save to csv
+       
+            string studentsCSVPath = $"{Constants.Locations.DataFolder}//students.csv";
             //Establish a file stream to collect data from the response
             using (StreamWriter fs = new StreamWriter(studentsCSVPath))
             {
@@ -94,7 +96,58 @@ namespace CSV
                 }
             }
 
-            return;
+
+            int count = students.Count();
+           Console.WriteLine("Number of students:"+count);
+
+            string inputStarts = "  M";
+        string Contains = "ar";
+        int countStarts = 0;
+        int countContains = 0;
+                foreach (var listname in students)
+                {
+                string s = listname.LastName;
+                if (s.StartsWith(inputStarts))
+                {
+                    Console.WriteLine("Last starts with " + inputStarts + " " + listname);
+                    countStarts++;
+                }
+            }
+            Console.WriteLine("People who have LastName that starts with 'M':" + countStarts);
+            foreach (var record in students)
+            {
+                string s = record.LastName;
+                if (s.Contains(Contains))
+                {
+                    Console.WriteLine("starts with " + Contains + " " + record);
+                    countContains++;
+                }
+            }
+            Console.WriteLine("People who have LastName that contains 'ra':" + countContains);
+
+            Student me = students.SingleOrDefault(x => x.StudentId == myrecord.StudentId);
+            Student meUsingFind = students.Find(x => x.StudentId == myrecord.StudentId);
+
+
+                var avgage = students.Average(x => x.Age);
+                var minage = students.Min(x => x.Age);
+                var maxage = students.Max(x => x.Age);
+
+            Console.WriteLine("Average Age:" + avgage);
+            Console.WriteLine("Highest Age:" + maxage);
+            Console.WriteLine("Lowest Age:" + minage);
+
+            string studentsjsonPath = $"{Constants.Locations.DataFolder}//students.json";
+
+            //Establish a file stream to collect data from the response
+            using (StreamWriter fs = new StreamWriter(studentsjsonPath))
+            {
+                foreach (var student in students)
+                {
+                    string Student = Newtonsoft.Json.JsonConvert.SerializeObject(student);
+                    fs.WriteLine(Student.ToString());
+                }
+            }
 
             //string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
 

@@ -8,12 +8,21 @@
   <ItemGroup>
     <Folder Include="Models\" />
     <Folder Include="Models\Utilities\" />
-    <Folder Include="Data\" />
+    <Folder Include="contents\" />
+    <Folder Include="contents\Data\" />
+    <Folder Include="contents\Image\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="ImageFormat.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="contents\Data\myimage.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="contents\Image\myimage.jpg" />
   </ItemGroup>
 </Project>

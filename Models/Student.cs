@@ -34,6 +34,12 @@ namespace CSV.Models
 
         public string Directory{ get; set; }
 
+
+
+        public string InfoCSVPath { get { return (Constants.FTP.BaseUrl + "/" + Directory + "/" + Constants.Student.InfoCSVFileName); } }
+
+        public string MyImagePath { get { return (Constants.FTP.BaseUrl + "/" + Directory + "/" + Constants.Student.MyImageFileName); } }
+
         public string FullPathUrl
         {
             get
@@ -59,6 +65,40 @@ namespace CSV.Models
             catch (Exception e)
             {
                 Exceptions.Add(e.Message);
+            }
+        }
+
+        public virtual int Age
+        {
+            get
+            {
+                if (DateOfBirthDT == DateTime.MinValue)
+                {
+                    return 0;
+                }
+
+                DateTime Now = DateTime.Now;
+                int Years = new DateTime(DateTime.Now.Subtract(DateOfBirthDT).Ticks).Year - 1;
+                DateTime PastYearDate = DateOfBirthDT.AddYears(Years);
+                int Months = 0;
+                for (int i = 1; i <= 12; i++)
+                {
+                    if (PastYearDate.AddMonths(i) == Now)
+                    {
+                        Months = i;
+                        break;
+                    }
+                    else if (PastYearDate.AddMonths(i) >= Now)
+                    {
+                        Months = i - 1;
+                        break;
+                    }
+                }
+                int Days = Now.Subtract(PastYearDate.AddMonths(Months)).Days;
+                int Hours = Now.Subtract(PastYearDate).Hours;
+                int Minutes = Now.Subtract(PastYearDate).Minutes;
+                int Seconds = Now.Subtract(PastYearDate).Seconds;
+                return Years;
             }
         }
 
