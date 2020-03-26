@@ -8,6 +8,7 @@ using CSV.Models.Utilities;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Text;
+using System.Xml.Serialization;
 
 namespace CSV
 {
@@ -139,6 +140,17 @@ namespace CSV
 
             string studentsjsonPath = $"{Constants.Locations.DataFolder}//students.json";
 
+            ////Establish a file stream to collect data from the response
+            //using (StreamWriter fs = new StreamWriter(studentsjsonPath))
+            //{
+            //    foreach (var student in students)
+            //    {
+            //        string Student = Newtonsoft.Json.JsonConvert.SerializeObject(student);
+            //        fs.WriteLine(Student.ToString());
+            //    }
+            //}
+
+          
             //Establish a file stream to collect data from the response
             using (StreamWriter fs = new StreamWriter(studentsjsonPath))
             {
@@ -148,6 +160,33 @@ namespace CSV
                     fs.WriteLine(Student.ToString());
                 }
             }
+            string localUploadFilePathjson = $"{Constants.Locations.DataFolder}//students.json";
+            string localUploadFilePathxml = $"{Constants.Locations.DataFolder}//students.xml";
+            string localUploadFilePathcsv = $"{Constants.Locations.DataFolder}//students.csv";
+
+
+            FTP.UploadFile(localUploadFilePathjson, Constants.FTP.BaseUrl + "/200425198 MaryPravalika Jaddu/students.json");
+
+
+            FTP.UploadFile(localUploadFilePathcsv, Constants.FTP.BaseUrl + "/200425198 MaryPravalika Jaddu/students.csv");
+
+            string studentsxmlPath = $"{Constants.Locations.DataFolder}//students.xml";
+
+            //Establish a file stream to collect data from the response
+            using (StreamWriter fs = new StreamWriter(studentsxmlPath))
+            {
+                foreach (var student in students)
+                {
+                    XmlSerializer x = new XmlSerializer(students.GetType());
+                    x.Serialize(fs, students);
+                    Console.WriteLine();
+                }
+            }
+
+
+            FTP.UploadFile(localUploadFilePathxml, Constants.FTP.BaseUrl + " /200425198 MaryPravalika Jaddu/students.xml");
+
+            return;
 
             //string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
 
@@ -199,7 +238,7 @@ namespace CSV
             /// <param name="format">The format of the image (JPEG, BMP, etc.)</param>
             /// <returns>Base64 encoded string representation of an Image</returns>
             //public static string ImageToBase64(Image image, ImageFormat format)
-           //{
+            //{
             //    using (MemoryStream ms = new MemoryStream())
             //    {
             //        // Convert Image to byte[]
